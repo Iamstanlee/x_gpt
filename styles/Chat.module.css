@@ -20,7 +20,7 @@
 
 .chat {
     padding: 10px;
-    max-width: 500px;
+    max-width: 400px;
 }
 
 .user_type_system {
@@ -46,13 +46,19 @@
 
 .msg_txt {
     max-width: 500px;
-    margin: 0 auto;
     padding: 0 20px;
+    border: 1px solid #000000;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    margin: 10px auto 15px;
+
 }
 
 .input_text {
+    outline: none;
     appearance: none;
-    border: 1px solid #000000;
+    border: none;
     font-size: inherit;
     font-family: inherit;
     border-radius: 8px;
@@ -60,6 +66,29 @@
     height: 50px;
     padding: 3px 10px;
     background: transparent;
-    margin-bottom: 15px;
-    outline-color: #000000;
+}
+
+.input_text:focus {
+    outline: none;
+    border: none;
+}
+
+.not_recording {
+
+}
+
+.recording {
+    color: red;
+}
+
+@media screen and (max-width: 600px) {
+    .input_text {
+        height: 45px;
+    }
+
+    .msg_txt {
+        padding: 0 10px;
+        margin: 10px 10px 15px 15px;
+    }
+
 }
