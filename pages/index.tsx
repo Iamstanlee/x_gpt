@@ -1,124 +1,167 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
+import React, {useEffect, useRef, useState} from "react";
+import {v4 as uniqueId} from 'uuid';
+import styles from "@/styles/Chat.module.css";
+import {Message, OpenAIRole} from "@/pages/api/chat";
 
-const inter = Inter({ subsets: ['latin'] })
 
-export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">pages/index.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+const initialPrompt: Message[] = [
+    {
+        id: uniqueId(),
+        role: OpenAIRole.system,
+        text: "You're DeleGPT, A 500level course advisor in the department of Computer Engineering, University of Benin.",
+    },
+    {
+        id: uniqueId(),
+        role: OpenAIRole.user,
+        text: "Introduce yourself briefly",
+    },
+];
+
+const Chat = () => {
+    const bottomRef = useRef(null)
+    const [messages, setMessages] = useState<Message[]>([]);
+    const [newMessage, setNewMessage] = useState<string>('');
+    const [error, setError] = useState<string>('')
+    const [isResponding, setIsResponding] = useState<boolean>(false)
+
+
+    const askGPT = async (messages: Message[]) => {
+        setIsResponding(true)
+        const msgId = uniqueId();
+        const latestMessages = messages.concat(
+            {text: 'Typing...', id: msgId, sent_at: Date.now(), role: OpenAIRole.assistant, is_typing: true},
+        )
+        setMessages(latestMessages)
+        try {
+            const response = await fetch('/api/chat/', {
+                method: 'POST',
+                body: JSON.stringify(messages)
+            });
+            const json = await response.json();
+            if (response.ok) {
+                setMessages(latestMessages.map((msg) => {
+                    if (msg.id == msgId) {
+                        msg.text = json.text
+                        msg.is_typing = false;
+                        return msg;
+                    }
+                    return msg
+                }))
+                if (json.is_not_done_typing) {
+                    askGPT(latestMessages);
+                }
+            } else {
+                setError(json.error ?? 'Something went wrong');
+            }
+        } catch (e: any) {
+            setError(e.message ?? 'Something went wrong');
+        }
+        setIsResponding(false)
+    };
+
+    const onType = (event: React.ChangeEvent<HTMLInputElement>) => setNewMessage(event.target.value);
+
+    const handleKeyDown = (event: React.KeyboardEvent) => {
+        if (event.key === "Enter") sendMessage(newMessage).then((_) => setNewMessage(''));
+    }
+
+    const isAI = (type: OpenAIRole) => [OpenAIRole.system, OpenAIRole.assistant].includes(type)
+
+    const sendMessage = async (text: string) => {
+        if (text.length <= 2) return;
+        const msg: Message = {
+            id: uniqueId(),
+            sent_at: Date.now(),
+            role: OpenAIRole.user,
+            text,
+        }
+        const latestMessages = messages.concat(msg)
+        setMessages(latestMessages)
+        await askGPT(latestMessages);
+    };
+
+    const scrollToBottom = () => {
+        if (bottomRef.current) { // @ts-ignore
+            bottomRef.current?.scrollIntoView({behavior: "smooth"})
+        }
+    }
+
+    const formatTimestamp = (value?: number) => {
+        return new Intl.DateTimeFormat('en-NG', {
+            dateStyle: 'medium',
+            timeStyle: 'short',
+            hour12: true,
+        }).format(value)
+    }
+
+
+    useEffect(() => {
+        askGPT(initialPrompt)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    useEffect(() => {
+        scrollToBottom()
+    }, [messages]);
+
+
+    if (error.length != 0) return <div className={styles.chat_feed}>
+        <Header/>
+        <div className={styles.chat_panel}
+             style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+            <h1 className="text-2xl text-red-500">{error}</h1>
+            <button className="bg-blue-500 text-white px-4 py-2 rounded-md mt-4"
+                    onClick={() => window.location.reload()}>Reload
+            </button>
         </div>
-      </div>
+    </div>
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700/10 after:dark:from-sky-900 after:dark:via-[#0141ff]/40 before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`${inter.className} mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p
-            className={`${inter.className} m-0 max-w-[30ch] text-sm opacity-50`}
-          >
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+    return (
+        <div className={styles.chat_feed}>
+            <Header/>
+            <div className={styles.chat_panel}>
+                {messages.slice(2).map((message, index) => {
+                    const rightClassName = `text-[9px] ml-2 text-gray-50`;
+                    const leftClassName = 'text-[9px] ml-2 text-gray-500';
+                    const className = `text-sm md:text-md  ${styles.chat} ${isAI(message.role) ? styles.user_type_system : styles.user_type_user} ${message.is_typing && 'italic'}`;
+                    const isLastMessage = index == messages.slice(2).length - 1;
+                    return <div
+                        key={message.id}
+                        ref={isLastMessage ? bottomRef : null}
+                        className={className}>
+                        {message.text}
+                        {!message.is_typing &&
+                            <span
+                                className={isAI(message.role) ? rightClassName : leftClassName}>
+                            {isLastMessage ? 'Just now' : formatTimestamp(message.sent_at)}
+                        </span>
+                        }
+                    </div>
+                })}
+            </div>
+            <div className={styles.msg_send}>
+                <div className={styles.msg_txt}>
+                    <input
+                        type="text"
+                        placeholder="Type message here..."
+                        value={newMessage}
+                        onChange={onType}
+                        onKeyDown={handleKeyDown}
+                        className={styles.input_text}
+                        disabled={isResponding}
+                    />
+                </div>
+            </div>
+        </div>
+    );
+};
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`${inter.className} mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p
-            className={`${inter.className} m-0 max-w-[30ch] text-sm opacity-50`}
-          >
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`${inter.className} mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p
-            className={`${inter.className} m-0 max-w-[30ch] text-sm opacity-50`}
-          >
-            Discover and deploy boilerplate example Next.js&nbsp;projects.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`${inter.className} mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p
-            className={`${inter.className} m-0 max-w-[30ch] text-sm opacity-50`}
-          >
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+const Header = () => {
+    return <div>
+        <h1>DeleGPT</h1>
+        <span>500level Course Advisor</span>
+    </div>
 }
+
+export default Chat;
