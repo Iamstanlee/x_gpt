@@ -9,12 +9,12 @@ const initialPrompt: Message[] = [
     {
         id: uniqueId(),
         role: OpenAIRole.system,
-        text: "You're DeleGPT, A 500level course advisor in the department of Computer Engineering, University of Benin.",
+        text: "You're DeleGPT, A 500level course advisor in the department of Computer Engineering, University of Benin. You can only provide information regarding computer engineering and advice students on their academic",
     },
     {
         id: uniqueId(),
         role: OpenAIRole.user,
-        text: "Introduce yourself briefly",
+        text: "Introduce yourself very briefly",
     },
 ];
 
@@ -69,19 +69,20 @@ const Chat = () => {
     const onType = (event: React.ChangeEvent<HTMLInputElement>) => setNewMessage(event.target.value);
 
     const handleKeyDown = (event: React.KeyboardEvent) => {
-        if (event.key === "Enter") sendMessage(newMessage).then((_) => setNewMessage(''));
+        if (event.key === "Enter") sendMessage(newMessage);
     }
 
     const isAI = (type: OpenAIRole) => [OpenAIRole.system, OpenAIRole.assistant].includes(type)
 
     const sendMessage = async (text: string) => {
-        if (text.length <= 2) return;
+        if (text.length === 0) return;
         const msg: Message = {
             id: uniqueId(),
             sent_at: Date.now(),
             role: OpenAIRole.user,
             text,
         }
+        setNewMessage('')
         const latestMessages = messages.concat(msg)
         setMessages(latestMessages)
         await askGPT(latestMessages);
