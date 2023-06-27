@@ -10,7 +10,7 @@ export default function Document() {
                 <meta content='xGPT: Personalized and contextual AI chat bot' name='description'/>
                 <meta
                     property='og:url'
-                    content='https://x-gpt.vercel.app/'
+                    content='https://ctx-gpt.vercel.app/'
                 />
                 <meta property='og:type' content='website'/>
                 <meta property='og:site_name' content='xGPT'/>
