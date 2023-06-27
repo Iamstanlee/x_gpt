@@ -1,7 +1,7 @@
 ## Getting Started
 
 - First add your OpenAI API key in the .env file as in the .env.example file
-- Update `initialPrompt` variable in index.tsx file to your liking
+- Update `chatContexts` variable in Components/Select.tsx file to your liking
 - Run the development server:
 
 ```bash

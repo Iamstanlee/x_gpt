@@ -4,18 +4,18 @@ export default function Document() {
     return (
         <Html lang="en">
             <Head>
-                <title>DeleGPT</title>
+                <title>xGPT</title>
                 <meta name='robots' content='follow, index'/>
                 <link href='/assets/icon.png' rel='shortcut icon'/>
-                <meta content='AI course advisor' name='description'/>
+                <meta content='xGPT: Personalized and contextual AI chat bot' name='description'/>
                 <meta
                     property='og:url'
-                    content='https://dele-gpt.vercel.app/'
+                    content='https://x-gpt.vercel.app/'
                 />
                 <meta property='og:type' content='website'/>
-                <meta property='og:site_name' content='DeleGPT'/>
-                <meta property='og:description' content='AI course advisor'/>
-                <meta property='og:title' content='DeleGPT'/>
+                <meta property='og:site_name' content='xGPT'/>
+                <meta property='og:description' content='xGPT: Personalized and contextual AI chat bot'/>
+                <meta property='og:title' content='xGPT'/>
             </Head>
             <body>
             <Main/>

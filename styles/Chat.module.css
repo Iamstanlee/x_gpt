@@ -73,14 +73,6 @@
     border: none;
 }
 
-.not_recording {
-
-}
-
-.recording {
-    color: red;
-}
-
 @media screen and (max-width: 600px) {
     .input_text {
         height: 45px;

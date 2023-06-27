@@ -22,6 +22,7 @@ export interface Message {
     sent_at?: number;
     is_typing?: boolean;
     role: OpenAIRole;
+    is_code?: boolean;
 }
 
 interface Props {
@@ -67,6 +68,6 @@ type OpenAIConfig = {
 const openAIConfig: OpenAIConfig = {
     model: 'gpt-3.5-turbo',
     temperature: 0.7,
-    max_token: 64,
+    max_token: 512,
     number_of_completion: 1,
 };
