@@ -143,7 +143,7 @@ const Chat = () => {
     }, [])
 
     useEffect(() => {
-        if (savedMsgs?.length == 0) {
+        if (savedMsgs == undefined) {
             askGPT(getInitialPrompt(savedChatContext ?? selectedChatContext));
         } else setChatMsgs(savedMsgs ?? [])
 
