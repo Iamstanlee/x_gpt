@@ -1,11 +1,10 @@
 import React, {useEffect, useRef, useState} from "react";
 import {v4 as uniqueId} from 'uuid';
 import {Message, OpenAIRole} from "@/pages/api/chat";
-
 import styles from "@/styles/Chat.module.css";
-import useStorage from "../utils/use-storage";
-import {ChatContext, chatContexts} from "@/Components/Select";
-import {Header} from "@/Components/Header";
+import useStorage from "@/utils/use-storage";
+import {ChatContext, chatContexts} from "@/components/Select";
+import {Header} from "@/components/Header";
 import {formatTimestamp} from "@/utils/date";
 
 

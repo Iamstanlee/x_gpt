@@ -1,4 +1,4 @@
-import SelectChatContext, {ChatContext} from "@/Components/Select";
+import {ChatContext, SelectChatContext} from "@/components/Select";
 
 export const Header = ({chatContext, selectChatContext}: {
     chatContext: ChatContext,

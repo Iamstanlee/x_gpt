@@ -1,7 +1,7 @@
 import React, {Fragment} from 'react'
 import {Listbox, Transition} from '@headlessui/react'
 import {CheckIcon, ChevronUpDownIcon} from '@heroicons/react/20/solid'
-import {AIChatIcon} from "@/Components/AIIcon";
+import {AIChatIcon} from "@/components/AIIcon";
 
 export interface ChatContext {
     id: number;
@@ -46,7 +46,7 @@ interface Props {
     onSelectItem: (ctx: ChatContext) => void;
 }
 
-export default function SelectChatContext({onSelectItem, selectedItem}: Props) {
+export function SelectChatContext({onSelectItem, selectedItem}: Props) {
 
     return (
         <Listbox value={selectedItem} onChange={onSelectItem}>
