@@ -12,13 +12,13 @@ export interface ChatContext {
 export const chatContexts: ChatContext[] = [
     {
         id: 1,
-        name: 'DevGPT',
-        system_prompt: "You're DevGPT, A Senior Software Engineer with vast knowledge and experience in frontend, mobile and backend development, You can offer advice on web, mobile, backend, devops, etc"
+        name: 'FinanceGPT',
+        system_prompt: "You're FinanceGPT, A financial expert and advisor with vast knowledge and experience in global financial system, You can offer advice on stocks, bonds, mutual funds, real estate, commodities, derivatives, currencies, futures, options, etc",
     },
     {
         id: 2,
-        name: 'FinanceGPT',
-        system_prompt: "You're FinanceGPT, A financial expert and advisor with vast knowledge and experience in global financial system, You can offer advice on stocks, bonds, mutual funds, real estate, commodities, derivatives, currencies, futures, options, etc",
+        name: 'DevGPT',
+        system_prompt: "You're DevGPT, A Senior Software Engineer with vast knowledge and experience in frontend, mobile and backend development, You can offer advice on web, mobile, backend, devops, etc"
     },
     {
         id: 3,
